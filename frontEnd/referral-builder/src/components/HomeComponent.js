@@ -1,21 +1,17 @@
 import React, { Component } from 'react'
 import { Switch, Route, Redirect, withRouter, Link } from 'react-router-dom'
-import { Breadcrumb, BreadcrumbItem, Button, Col, Row, Form, FormControl, FormGroup, Label, Input } from 'reactstrap'
+import { Breadcrumb, BreadcrumbItem, Button, Col, Row, Form, FormControl, FormGroup, Label, Input, Dropdown, DropdownToggle, DropdownItem, DropdownMenu } from 'reactstrap'
 
 class Home extends Component {
   constructor (props) {
     super(props)
     this.state = {
-      givenName: '',
-      surname: '',
-      email: '',
-      phone: '',
-      homeName: '',
-      street: '',
-      suburb: '',
-      state: '',
-      postcode: '',
-      country: ''
+      postalCode: '',
+      bed: '',
+      bath: '',
+      car: '',
+      propType: '',
+      prediction: ''
     }
     this.handleSubmit = this.handleSubmit.bind(this)
     this.handleChange = this.handleChange.bind(this)
@@ -28,7 +24,7 @@ class Home extends Component {
   handleSubmit (event) {
     console.log(JSON.stringify(this.state))
 
-    fetch('http://0.0.0.0:5000/', {
+    fetch('http://localhost:4003/', {
       method: 'POST', // or 'PUT'
       headers: {
         'Content-Type': 'application/json',
@@ -50,93 +46,72 @@ class Home extends Component {
     return (
       <div className='container'>
         <Form className='text-md-left' onSubmit={(e) => this.handleSubmit(e)}>
-          <h5>Personal Details</h5>
+          <h5>Property Details</h5>
           <hr />
           <Row>
             <Col>
               <FormGroup>
-                <Label>Given Name:</Label>
-                <Input type='text' name='givenName' onChange={e => this.setState({ givenName: e.target.value })} />
+                <Label>Postal Code:</Label>
+                <Input type='text' name='postalCode' onChange={e => this.setState({ postalCode: e.target.value })} />
               </FormGroup>
             </Col>
             <Col>
               <FormGroup>
-                <Label>Surname:</Label>
-                <Input type='text' name='surname' onChange={e => this.setState({ surname: e.target.value })} />
-              </FormGroup>
-            </Col>
-          </Row>
-          <Row>
-            <Col>
-              <FormGroup>
-                <Label>Email:</Label>
-                <Input type='text' name='email' onChange={e => this.setState({ email: e.target.value })} />
-              </FormGroup>
-            </Col>
-            <Col>
-              <FormGroup>
-                <Label>Phone:</Label>
-                <Input type='text' name='phone' onChange={e => this.setState({ phone: e.target.value })} />
-              </FormGroup>
-            </Col>
-          </Row>
-          <h5>Address</h5>
-          <hr />
-          <Row>
-            <Col>
-              <FormGroup>
-                <Label>Home Name OR #:</Label>
-                <Input type='text' name='homeName' onChange={e => this.setState({ homeName: e.target.value })} />
-              </FormGroup>
-            </Col>
-            <Col>
-              <FormGroup>
-                <Label>Street:</Label>
-                <Input type='text' name='street' onChange={e => this.setState({ street: e.target.value })} />
+                <Label>Bed:</Label>
+                <Input type='text' name='bed' onChange={e => this.setState({ bed: e.target.value })} />
               </FormGroup>
             </Col>
           </Row>
           <Row>
             <Col>
               <FormGroup>
-                <Label>Suburb:</Label>
-                <Input type='text' name='suburb' onChange={e => this.setState({ suburb: e.target.value })} />
+                <Label>Bath:</Label>
+                <Input type='text' name='bath' onChange={e => this.setState({ bath: e.target.value })} />
               </FormGroup>
             </Col>
             <Col>
               <FormGroup>
-                <Label>State</Label>
-                <Input type='text' name='state' onChange={e => this.setState({ state: e.target.value })} />
-              </FormGroup>
-            </Col>
-          </Row>
-          <Row>
-            <Col>
-              <FormGroup>
-                <Label>Postcode:</Label>
-                <Input type='text' name='postcode' onChange={e => this.setState({ postcode: e.target.value })} />
-              </FormGroup>
-            </Col>
-            <Col>
-              <FormGroup>
-                <Label>Country:</Label>
-                <Input type='text' name='country' onChange={e => this.setState({ country: e.target.value })} />
+                <Label>Car Spaces:</Label>
+                <Input type='text' name='car' onChange={e => this.setState({ car: e.target.value })} />
               </FormGroup>
             </Col>
           </Row>
           <Row>
             <Col>
               <FormGroup>
-                <Button color='outline-secondary' block>Upload Avatar</Button>
+                <Label>Property Type:</Label>
+                <Input type='select' name='propType' onClick={e => this.setState({ propType: e.target.value })}>
+                  <option>Please select an option below...</option>
+                  <option>house</option>
+                  <option>duplex/semi-detached</option>
+                  <option>terrace</option>
+                  <option>townhouse</option>
+                  <option>villa</option>
+                </Input>
               </FormGroup>
             </Col>
+          </Row>
+          <Row>
+            {/*
             <Col>
               <FormGroup>
-                <Button type='submit' color='success' block>Create Referral</Button>
+                <Button color='outline-secondary' block>Clear</Button>
+              </FormGroup>
+            </Col>
+            */}
+            <Col>
+              <FormGroup>
+                <Button type='submit' color='success' block>Submit</Button>
               </FormGroup>
             </Col>
           </Row>
         </Form>
+        <Row>
+          <Col>
+            <Label>Price Prediction:</Label>
+          </Col>
+        </Row>
+
       </div>
     )
   }

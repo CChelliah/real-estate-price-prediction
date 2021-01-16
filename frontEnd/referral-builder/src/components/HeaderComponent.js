@@ -7,20 +7,6 @@ class Header extends Component {
     return (
       <>
         <Navbar light expand="xs">
-          <div className='container header'>
-            <Nav className="mr-auto" navbar>
-              <NavItem>
-                <NavLink className='nav-link' to='/home'>
-                  <span className='fa fa-home fa-lg' />Add
-                </NavLink>
-              </NavItem>
-              <NavItem>
-                <NavLink className='nav-link' to='/display'>
-                  <span className='fa fa-info fa-lg' />Display
-                </NavLink>
-              </NavItem>
-            </Nav>
-          </div>
         </Navbar>
       </>
     )
