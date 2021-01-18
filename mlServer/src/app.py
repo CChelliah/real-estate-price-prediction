@@ -1,75 +1,62 @@
 import numpy as np
 from flask import Flask, request, jsonify
-import pickle
-import os
 import pandas as pd
 import numpy as np
-from sklearn import linear_model
-import matplotlib.pyplot as plt
-from sklearn import metrics
-from sklearn.preprocessing import LabelEncoder
-from sklearn.model_selection import train_test_split, cross_val_score, GridSearchCV
-from sklearn.metrics import mean_squared_error, r2_score, accuracy_score
-from sklearn import linear_model
-from sklearn import neighbors
 from sklearn.ensemble import RandomForestRegressor
-from sklearn.preprocessing import StandardScaler, MinMaxScaler
-from sklearn.neighbors import KNeighborsClassifier
-from sklearn.feature_selection import SelectPercentile, chi2, SelectFromModel
-from sklearn.impute import KNNImputer
-from scipy import stats
-import seaborn as sns
 import pickle
+import json
 from flask_cors import CORS
 
 app = Flask(__name__)
 cors = CORS(app)
 
-def createPrediction(json): 
-    test = {
-        "postalCode": "86",
-        "bed": "1",
-        "bath": "2",
-        "car": "1", 
-        "propType": "1", 
-        "Year": "2019", 
-        "Months": "10",
-        "latitude": "-33.643809", 
-        "longitude": "151.315858"
-    }
+maps = {
+    "house": 0,
+    "duplex/semi-detached": 1,
+    "terrace": 2,
+    "townhouse": 3,
+    "villa": 4
+}
 
-    temp = pd.DataFrame([test])
-    pred = model.predict(temp)
-    return str(pred[0])
+def mapPostCodes(): 
+    df = pd.read_csv('../data/SydneyHousePrices.csv')
+    suburb_df = pd.read_csv('../data/sydney_suburbs.csv')
+    df = pd.merge(df,suburb_df, on='suburb')
+    df = df.drop(['Date', 'suburb', 'Id', 'bed', 'bath', 'car', 'propType', 'sellPrice'], axis=1) 
+    df = df.drop_duplicates('postalCode', keep='last')
+    postCodes = df.set_index('postalCode').T.to_dict('dict')
+    return postCodes
+
+def createRequest(req): 
+    req['latitude'] = postCodes[int(req['postalCode'])]['latitude']
+    req['longitude'] = postCodes[int(req['postalCode'])]['longitude']
+    for postcode in postCodes: 
+        req["postalCode_" + str(postcode)] = 0
+    req["postalCode_" + str(req['postalCode'])] = 1
+    for i in range(0, 5):
+        req["propType_" + str(i)] = 0
+    propType = req['propType']
+    req["propType_" + str(maps[propType])] = 1
+    req['Years'] = 2019
+    req['Months'] = 1
+    del req['propType']
+    del req['postalCode']
+    del req['prediction']
+    return req
+
+def createPrediction(req):
+    pred = model.predict(pd.DataFrame([req]))
+    return str(round(pred[0]))
 
 @app.route('/', methods=['POST'])
 def home():
     json = request.json
-    prediction = createPrediction(json)
-    print("Prediction")
-    print(prediction)
+    req = createRequest(json)
+    prediction = createPrediction(req)
     return jsonify({'prediction' : prediction })
 
 if __name__ == "__main__":
     f = open('../models/model.pkl', 'rb')
     model = pickle.load(f)
-    app.run(host='localhost', port=4003, debug=True)
-
-
-'''
-  test = {
-        "postalCode": "86",
-        "bed": "1",
-        "bath": "2",
-        "car": "1", 
-        "propType": "1", 
-        "Year": "2019", 
-        "Months": "10",
-        "latitude": "-33.643809", 
-        "longitude": "151.315858"
-    }
-
-    temp = pd.DataFrame([test])
-    print(model.predict(temp))
-    '''
-
+    postCodes = mapPostCodes()
+    app.run(host='localhost', port=4005, debug=True)

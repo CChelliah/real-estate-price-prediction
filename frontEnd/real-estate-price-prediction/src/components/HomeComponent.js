@@ -22,9 +22,8 @@ class Home extends Component {
   }
 
   handleSubmit (event) {
-    console.log(JSON.stringify(this.state))
-
-    fetch('http://localhost:4003/', {
+    // console.log(JSON.stringify(this.state))
+    fetch('http://localhost:4005/', {
       method: 'POST', // or 'PUT'
       headers: {
         'Content-Type': 'application/json',
@@ -33,11 +32,13 @@ class Home extends Component {
     })
       .then(response => response.json())
       .then(data => {
+        this.setState({ prediction: data.prediction })
         console.log('Success:', data)
       })
       .catch((error) => {
         console.error('Error:', error)
       })
+    console.log(JSON.stringify(this.state))
     event.preventDefault()
     event.target.reset()
   }
@@ -92,13 +93,6 @@ class Home extends Component {
             </Col>
           </Row>
           <Row>
-            {/*
-            <Col>
-              <FormGroup>
-                <Button color='outline-secondary' block>Clear</Button>
-              </FormGroup>
-            </Col>
-            */}
             <Col>
               <FormGroup>
                 <Button type='submit' color='success' block>Submit</Button>
@@ -109,6 +103,7 @@ class Home extends Component {
         <Row>
           <Col>
             <Label>Price Prediction:</Label>
+            <div>{this.state.prediction}</div>
           </Col>
         </Row>
 

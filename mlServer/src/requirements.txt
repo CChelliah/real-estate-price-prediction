@@ -1,0 +1,6 @@
+Flask
+Jinja2
+Flask-RESTful
+six
+flask_cors
+numpy
